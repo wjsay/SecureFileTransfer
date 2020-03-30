@@ -19,14 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    private static final String serverIP = "127.0.0.1";
+    private static String serverIP = "127.0.0.1";
     private static final int serverPort = 13579;
     private static final int BLOCK_SIZE = 1448;
 
+    private int id;
     private List<FileInfo> myFiles = new ArrayList<>();
     private List<String> downloadList = new ArrayList<>();
     private JPanel jPanel我的 = null;
     private JPanel jPanel下载 = null;
+
+    public Client (int id) {
+        this.id = id;
+    }
 
     public void pullFileList() {
         List<FileInfo> ret = new ArrayList<>();
@@ -34,7 +39,7 @@ public class Client {
             socketChannel.connect(new InetSocketAddress(serverIP, serverPort));
             MyPacketHead packetHead = new MyPacketHead();
             packetHead.setType((short) 1);
-            packetHead.setUserId(1);
+            packetHead.setUserId(id);
             ByteBuffer buf = packetHead.toByteBuffer();
             socketChannel.write(buf);
             buf = ByteBuffer.allocate(2048);
@@ -67,7 +72,7 @@ public class Client {
                 String filename = tmp[tmp.length - 1];
                 FileChannel fileChannel = aFile.getChannel();
                 packetHead.setType((short) 2);
-                packetHead.setUserId(1);
+                packetHead.setUserId(id);
                 int total = ((int) aFile.length() + BLOCK_SIZE - 1) / BLOCK_SIZE;
                 byte[] filenameBytes = filename.getBytes();
                 packetHead.setSize(filenameBytes.length);
@@ -108,7 +113,7 @@ public class Client {
                 socketChannel.connect(new InetSocketAddress(serverIP, serverPort));
                 FileChannel fileChannel = aFile.getChannel();
                 packetHead.setType((short) 3);
-                packetHead.setUserId(1);
+                packetHead.setUserId(id);
                 byte[] filenameBytes = fileInfo.getFilename().getBytes();
                 packetHead.setSize(filenameBytes.length);
                 buf.put(packetHead.toByteBuffer());
@@ -198,4 +203,9 @@ public class Client {
     public void setjPanel下载(JPanel jPanel) {
         jPanel下载 = jPanel;
     }
+
+    public static void setServerIP(String serverIP) {
+        Client.serverIP = serverIP;
+    }
+
 }

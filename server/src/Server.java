@@ -7,13 +7,19 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 
 public class Server {
     private static final int BLOCK_SIZE = 1204;
     private static String home = "/usr/local/SecureFileTransfer/";
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            home = args[0];
+            File file = new File(home);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
             serverSocketChannel.socket().bind(new InetSocketAddress(13579));
             while (true) {
@@ -29,6 +35,9 @@ public class Server {
 
     static ByteBuffer getFilenameList(int userId) { // 静态方法每个线程一份
         File myDir = new File(home + userId);
+        if (!myDir.exists()) {
+            myDir.mkdirs();
+        }
         int cnt = 0;
         ByteBuffer buf = ByteBuffer.allocate(2048);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

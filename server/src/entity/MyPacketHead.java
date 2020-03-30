@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MyPacketHead {
     private short type; // 2
     private int userId; // 4
-    private int seq; // 4 序号
+    private int seq; // 4 序号。为断点续传定义，暂时实现
     private int size; // 4 内容大小
 
     public ByteBuffer toByteBuffer() {
